@@ -69,7 +69,7 @@ namespace KJBrainDeveloperService.Business
             if (request is null)
                 return CreateErrorResponse<CreateUserResponse>(ErrorMessage.InvalidRequest);
 
-            var usernameValidation = IsValidUsername(request.Username);
+            var usernameValidation = IsValidUsername(request.Username, true);
             if (usernameValidation.HasError && usernameValidation.ErrorMessage.HasValue)
             {
                 return CreateErrorResponse<CreateUserResponse>(usernameValidation.ErrorMessage.Value);
@@ -101,7 +101,7 @@ namespace KJBrainDeveloperService.Business
             if (request is null)
                 return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidRequest);
 
-            var usernameValidation = IsValidUsername(request.Username);
+            var usernameValidation = IsValidUsername(request.Username, false);
             if (usernameValidation.HasError && usernameValidation.ErrorMessage.HasValue)
             {
                 return CreateErrorResponse<ResponseBase>(usernameValidation.ErrorMessage.Value);
@@ -213,7 +213,7 @@ namespace KJBrainDeveloperService.Business
         /// <summary>
         /// Execute username validating
         /// </summary>
-        private ResponseBase IsValidUsername(string username)
+        private ResponseBase IsValidUsername(string username, bool checkExists)
         {
             if (String.IsNullOrWhiteSpace(username))
                 return CreateErrorResponse<ResponseBase>(ErrorMessage.UsernameRequired);
@@ -221,8 +221,11 @@ namespace KJBrainDeveloperService.Business
             if (username.Length > 50)
                 return CreateErrorResponse<ResponseBase>(ErrorMessage.UsernameMaxLength);
 
-            if (_unitOfWork.UserRepository.Count(u => u.Username == username) > 0)
-                return CreateErrorResponse<ResponseBase>(ErrorMessage.UsernameExists);
+            if (checkExists)
+            {
+                if (_unitOfWork.UserRepository.Count(u => u.Username == username) > 0)
+                    return CreateErrorResponse<ResponseBase>(ErrorMessage.UsernameExists);
+            }
 
             return new ResponseBase
             {
