@@ -303,7 +303,7 @@ namespace KJBrainDeveloperService.Business
         /// <summary>
         /// Delete user by id
         /// </summary>
-        public async Task<ResponseBase> Delete(long id)
+        public async Task<ResponseBase> DeleteById(long id)
         {
             try
             {
@@ -322,6 +322,52 @@ namespace KJBrainDeveloperService.Business
                 await _unitOfWork.SaveAsync();
 
                 return new ResponseBase();
+            }
+            catch (Exception ex)
+            {
+                _unitOfWork.Rollback();
+                return await _validator.CreateDeleteErrorResponse<ResponseBase>(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Delete logined user
+        /// </summary>
+        public async Task<ResponseBase> DeleteAccount(DeleteAccountRequest request, long userId)
+        {
+            try
+            {
+                _unitOfWork.BeginTransaction();
+
+                var validationResult = _validator.IsValidDeleteAccountRequest(request);
+                if (!validationResult.HasError)
+                {
+                    var userEntity = await _unitOfWork.UserRepository.ReadAsync(u => u.Username == request.Identifier
+                    || u.Email == request.Identifier);
+
+                    var result = _factory.Create(new LoginUserRequest
+                    {
+                        Identifier = request.Identifier,
+                        Password = request.Password
+                    }, userEntity);
+
+                    if (result is null || result.Id != userId)
+                    {
+                        return _validator.CreateErrorResponse<LoginUserResponse>(
+                        ErrorMessage.InvalidPasswordOrUsernameOrEmail,
+                        StatusCode.BadRequest
+                        );
+                    }
+
+                    //delete user
+                    await _unitOfWork.UserRepository.DeleteAsync(userEntity);
+
+                    await _unitOfWork.CommitAsync();
+                    await _unitOfWork.SaveAsync();
+
+                    return new ResponseBase();
+                }
+                return validationResult;
             }
             catch (Exception ex)
             {

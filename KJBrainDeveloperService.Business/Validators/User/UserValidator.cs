@@ -130,7 +130,7 @@ namespace KJBrainDeveloperService.Business
             var passwordMatchValidation = IsValidPasswordMatch(userId, request.Password);
             if (passwordMatchValidation.HasError && passwordMatchValidation.ErrorMessage.HasValue)
             {
-                return CreateErrorResponse<ResponseBase>(passwordMatchValidation.ErrorMessage.Value);
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidPasswordOrEmail);
             }
 
             var emailValidation = IsValidEmail(request.Email);
@@ -200,6 +200,27 @@ namespace KJBrainDeveloperService.Business
             if (password.Length < 4)
                 return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidPasswordFormat);
 
+
+            return new ResponseBase
+            {
+                StatusCode = StatusCode.Ok,
+            };
+        }
+
+        /// <summary>
+        /// Execute account delete request validating
+        /// </summary>
+        public ResponseBase IsValidDeleteAccountRequest(DeleteAccountRequest request)
+        {
+
+            if (request is null)
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.InvalidRequest);
+
+            if (String.IsNullOrWhiteSpace(request.Identifier))
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.UsernameOrEmailRequired);
+
+            if (String.IsNullOrWhiteSpace(request.Password))
+                return CreateErrorResponse<ResponseBase>(ErrorMessage.PasswordRequired);
 
             return new ResponseBase
             {

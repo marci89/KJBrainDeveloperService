@@ -162,5 +162,22 @@ namespace KJBrainDeveloperService.API.Controllers
             }
             return NoContent();
         }
+
+        /// <summary>
+        /// Delete logined account
+        /// </summary>
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete([FromQuery] DeleteAccountRequest request)
+        {
+            var userId = GetLoginedUserId();
+
+            var response = await _service.DeleteAccount(request, userId);
+            if (response.HasError)
+            {
+                LogError(JsonConvert.SerializeObject(request), response);
+                return this.CreateErrorResponse(response);
+            }
+            return NoContent();
+        }
     }
 }
