@@ -8,5 +8,7 @@ namespace KJBrainDeveloperService.Persistence.Repositories
     public interface IUnitOfWork : IUnitOfWorkBase
     {
         IUserRepository UserRepository { get; }
+        ITrainingStatisticsRepository TrainingStatisticsRepository { get; }
+        IMemoryCardStatisticsRepository MemoryCardStatisticsRepository { get; }
     }
 }

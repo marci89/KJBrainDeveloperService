@@ -9,12 +9,18 @@ namespace KJBrainDeveloperService.Persistence.Repositories
     {
         public UnitOfWork(
             DataContext context,
-            IUserRepository userRepository
+            IUserRepository userRepository,
+            ITrainingStatisticsRepository trainingStatisticsRepository,
+            IMemoryCardStatisticsRepository memoryCardStatisticsRepository
             ) : base(context)
         {
             UserRepository = userRepository;
+            TrainingStatisticsRepository = trainingStatisticsRepository;
+            MemoryCardStatisticsRepository = memoryCardStatisticsRepository;
         }
 
         public virtual IUserRepository UserRepository { get; }
+        public virtual ITrainingStatisticsRepository TrainingStatisticsRepository { get; }
+        public virtual IMemoryCardStatisticsRepository MemoryCardStatisticsRepository { get; }
     }
 }

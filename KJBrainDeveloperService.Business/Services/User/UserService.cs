@@ -309,6 +309,15 @@ namespace KJBrainDeveloperService.Business
             {
                 _unitOfWork.BeginTransaction();
 
+                //delete user's trainingStatistics
+                var trainingStatistics = _unitOfWork.TrainingStatisticsRepository.Query(x => x.UserId == id);
+                await _unitOfWork.TrainingStatisticsRepository.DeleteManyAsync(trainingStatistics);
+
+                //delete user's memoryCardStatistics
+                var memoryCardStatistics = _unitOfWork.MemoryCardStatisticsRepository.Query(x => x.UserId == id);
+                await _unitOfWork.MemoryCardStatisticsRepository.DeleteManyAsync(memoryCardStatistics);
+
+
                 //delete user
                 var entity = await _unitOfWork.UserRepository.ReadAsync(u => u.Id == id);
                 if (entity is null)
@@ -358,6 +367,14 @@ namespace KJBrainDeveloperService.Business
                         StatusCode.BadRequest
                         );
                     }
+
+                    //delete user's trainingStatistics
+                    var trainingStatistics = _unitOfWork.TrainingStatisticsRepository.Query(x => x.UserId == userEntity.Id);
+                    await _unitOfWork.TrainingStatisticsRepository.DeleteManyAsync(trainingStatistics);
+
+                    //delete user's memoryCardStatistics
+                    var memoryCardStatistics = _unitOfWork.MemoryCardStatisticsRepository.Query(x => x.UserId == userEntity.Id);
+                    await _unitOfWork.MemoryCardStatisticsRepository.DeleteManyAsync(memoryCardStatistics);
 
                     //delete user
                     await _unitOfWork.UserRepository.DeleteAsync(userEntity);

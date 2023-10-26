@@ -27,6 +27,8 @@ namespace KJBrainDeveloperService.API.Extensions
         private static void RegisterRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITrainingStatisticsRepository, TrainingStatisticsRepository>();
+            services.AddScoped<IMemoryCardStatisticsRepository, MemoryCardStatisticsRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
@@ -37,6 +39,7 @@ namespace KJBrainDeveloperService.API.Extensions
         private static void RegisterServices(this IServiceCollection services)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
 
             services.AddScoped<IAuthTokenService, AuthTokenService>();
         }
@@ -47,6 +50,7 @@ namespace KJBrainDeveloperService.API.Extensions
         private static void RegisterFactories(this IServiceCollection services)
         {
             services.AddScoped<UserFactory>();
+            services.AddScoped<StatisticsFactory>();
         }
 
         /// <summary>
@@ -55,6 +59,7 @@ namespace KJBrainDeveloperService.API.Extensions
         private static void RegisterValidators(this IServiceCollection services)
         {
             services.AddScoped<UserValidator>();
+            services.AddScoped<StatisticsValidator>();
         }
 
         /// <summary>

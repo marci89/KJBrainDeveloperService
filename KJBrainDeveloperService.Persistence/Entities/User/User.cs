@@ -51,6 +51,19 @@
         /// </summary>
         public DateTime? ResetTokenExpiration { get; set; }
 
+        #region Navigation propeties
+
+        /// <summary>
+        /// User's TrainingStatistics
+        /// </summary>
+        public ICollection<TrainingStatistics> TrainingStatistics { get; set; }
+
+        /// <summary>
+        /// User's MemoryCardStatistics
+        public ICollection<MemoryCardStatistics> MemoryCardStatistics { get; set; }
+
+        #endregion
+
     }
 }
 
