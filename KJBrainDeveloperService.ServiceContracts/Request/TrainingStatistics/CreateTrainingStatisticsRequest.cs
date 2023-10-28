@@ -13,5 +13,9 @@
         /// Training mode type
         /// </summary>
         public TrainingModeType TrainingMode { get; set; }
+        /// <summary>
+        /// Sound type id to be diverse.
+        /// </summary>
+        public int SoundTypeId { get; set; }
     }
 }

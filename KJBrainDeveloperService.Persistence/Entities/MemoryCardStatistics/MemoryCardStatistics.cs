@@ -22,9 +22,13 @@
         /// </summary>
         public DifficultType Difficult { get; set; }
         /// <summary>
-        /// Last picture type id to be diverse.
+        /// Picture type id to be diverse.
         /// </summary>
-        public int LastPictureTypeId { get; set; }
+        public int PictureTypeId { get; set; }
+        /// <summary>
+        /// practice mode or training
+        /// </summary>
+        public bool IsPractice { get; set; }
         /// <summary>
         /// created date
         /// </summary

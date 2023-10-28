@@ -39,11 +39,14 @@ namespace KJBrainDeveloperService.Persistence.Migrations
                         .HasColumnType("text")
                         .HasDefaultValue("Easy");
 
-                    b.Property<int>("LastPictureTypeId")
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsPractice")
+                        .HasColumnType("boolean");
 
                     b.Property<long>("Moved")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("PictureTypeId")
+                        .HasColumnType("integer");
 
                     b.Property<long>("UserId")
                         .HasColumnType("bigint");
@@ -68,6 +71,9 @@ namespace KJBrainDeveloperService.Persistence.Migrations
 
                     b.Property<long>("Score")
                         .HasColumnType("bigint");
+
+                    b.Property<int>("SoundTypeId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("TrainingMode")
                         .IsRequired()

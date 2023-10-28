@@ -28,7 +28,9 @@ namespace KJBrainDeveloperService.Persistence
             builder.Property(u => u.Moved)
                    .IsRequired();
 
-            builder.Property(u => u.LastPictureTypeId)
+            builder.Property(u => u.PictureTypeId)
+                   .IsRequired();
+            builder.Property(u => u.IsPractice)
                    .IsRequired();
 
             builder.Property(u => u.Difficult)

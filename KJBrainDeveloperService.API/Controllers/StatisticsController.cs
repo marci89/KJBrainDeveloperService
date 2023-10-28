@@ -19,15 +19,17 @@ namespace KJBrainDeveloperService.API.Controllers
             _service = service;
         }
 
+        #region training
+
         /// <summary>
-        /// Get User's Training statistics by logined user id.
+        /// Get User's daily Training statistics by logined user id.
         /// </summary>
-        [HttpGet("ListTraining")]
-        public async Task<IActionResult> ListTraining()
+        [HttpGet("DailyTraining")]
+        public async Task<IActionResult> DailyTraining()
         {
             var userId = GetLoginedUserId();
 
-            var response = await _service.ListTraining(userId);
+            var response = await _service.ReadDailyTraining(userId);
             if (response.HasError)
             {
                 LogError("userId: " + userId, response);
@@ -88,7 +90,9 @@ namespace KJBrainDeveloperService.API.Controllers
             return NoContent();
         }
 
+        #endregion
 
+        #region memory card
 
         /// <summary>
         /// Get User's MemoryCard statistics by logined user id.
@@ -158,5 +162,7 @@ namespace KJBrainDeveloperService.API.Controllers
             }
             return NoContent();
         }
+
+        #endregion
     }
 }

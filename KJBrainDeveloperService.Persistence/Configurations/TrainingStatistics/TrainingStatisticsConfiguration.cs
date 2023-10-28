@@ -28,6 +28,9 @@ namespace KJBrainDeveloperService.Persistence
             builder.Property(u => u.Score)
                    .IsRequired();
 
+            builder.Property(u => u.SoundTypeId)
+                   .IsRequired();
+
             builder.Property(u => u.TrainingMode)
                    .IsRequired()
                    .HasDefaultValue(TrainingModeType.MemorySound)

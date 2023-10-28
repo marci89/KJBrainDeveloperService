@@ -2,6 +2,8 @@
 using KJBrainDeveloperService.ServiceContracts;
 using Microsoft.EntityFrameworkCore;
 
+using Entity = KJBrainDeveloperService.Persistence.Entities;
+
 namespace KJBrainDeveloperService.Business
 {
     /// <summary>
@@ -30,21 +32,56 @@ namespace KJBrainDeveloperService.Business
         /// <summary>
         /// List Training statistics by user id
         /// </summary>
-        public async Task<ListTrainingStatisticsResponse> ListTraining(long userId)
+        public async Task<ReadDailyTrainingStatisticsResponse> ReadDailyTraining(long userId)
         {
             try
             {
-                var entities = await _unitOfWork.TrainingStatisticsRepository.Query(x => x.UserId == userId).OrderBy(x => x.Created).ToListAsync();
+                DateTime today = DateTime.UtcNow.Date;
 
-                return await Task.FromResult(new ListTrainingStatisticsResponse
+                //tarinings
+                var trainings = await _unitOfWork.TrainingStatisticsRepository
+                    .Query(x => x.UserId == userId && x.Created.Date == today)
+                    .ToListAsync();
+
+                var lastSoundId = await ReadLastSoundTypeId(userId);
+
+
+                //memory card
+                var memoryCard = await _unitOfWork.MemoryCardStatisticsRepository
+                    .Query(x => x.UserId == userId && x.Created.Date == today && x.IsPractice == false)
+                    .FirstOrDefaultAsync();
+
+                var lastPictureId = await ReadLastPictureTypeId(userId);
+
+                var cardSize = await ReadCardSize(userId);
+
+                var result = new DailyTrainingStatisticsResponse
+                {
+                    MemoryCard = _factory.Create(memoryCard),
+                    MemorySound = _factory.Create(trainings.Where(x => x.TrainingMode == Entity.TrainingModeType.MemorySound).FirstOrDefault()),
+                    WhatDayIsIt = _factory.Create(trainings.Where(x => x.TrainingMode == Entity.TrainingModeType.WhatDayIsIt).FirstOrDefault()),
+                    MemoryNumber = _factory.Create(trainings.Where(x => x.TrainingMode == Entity.TrainingModeType.MemoryNumber).FirstOrDefault()),
+                    Math = _factory.Create(trainings.Where(x => x.TrainingMode == Entity.TrainingModeType.Math).FirstOrDefault()),
+                    MemoryMatrix = _factory.Create(trainings.Where(x => x.TrainingMode == Entity.TrainingModeType.MemoryMatrix).FirstOrDefault()),
+                    BestMemorySoundScore = await ReadBestScore(userId, Entity.TrainingModeType.MemorySound),
+                    BestWhatDayIsItScore = await ReadBestScore(userId, Entity.TrainingModeType.WhatDayIsIt),
+                    BestMemoryNumberScore = await ReadBestScore(userId, Entity.TrainingModeType.MemoryNumber),
+                    BestMathdScore = await ReadBestScore(userId, Entity.TrainingModeType.Math),
+                    BestMemoryMatrixScore = await ReadBestScore(userId, Entity.TrainingModeType.MemoryMatrix),
+                    LastPictureTypeId = lastPictureId,
+                    LastSoundTypeId = lastSoundId,
+                    MemoryCardSizeType = cardSize
+                };
+
+                return await Task.FromResult(new ReadDailyTrainingStatisticsResponse
                 {
                     StatusCode = StatusCode.Ok,
-                    Result = entities.Select(x => _factory.Create(x)).ToList()
+                    Result = result
                 });
             }
             catch (Exception ex)
             {
-                return await _validator.CreateServerErrorResponse<ListTrainingStatisticsResponse>(ex.Message);
+                return await _validator.CreateServerErrorResponse<ReadDailyTrainingStatisticsResponse>(ex.Message);
             }
         }
 
@@ -95,31 +132,6 @@ namespace KJBrainDeveloperService.Business
             catch (Exception ex)
             {
                 return await _validator.CreateCreationErrorResponse<CreateTrainingStatisticsResponse>(ex.Message);
-            }
-        }
-
-
-        /// <summary>
-        /// Delete Training statistics by id
-        /// </summary>
-        public async Task<ResponseBase> DeleteTraining(long id)
-        {
-            try
-            {
-                var entity = await _unitOfWork.TrainingStatisticsRepository.ReadAsync(u => u.Id == id);
-                if (entity is null)
-                {
-                    return await _validator.CreateNotFoundResponse<ResponseBase>();
-                }
-
-                await _unitOfWork.TrainingStatisticsRepository.DeleteAsync(entity);
-                await _unitOfWork.SaveAsync();
-
-                return new ResponseBase();
-            }
-            catch (Exception ex)
-            {
-                return await _validator.CreateDeleteErrorResponse<ResponseBase>(ex.Message);
             }
         }
 
@@ -223,31 +235,6 @@ namespace KJBrainDeveloperService.Business
             }
         }
 
-
-        /// <summary>
-        /// Delete MemoryCard statistics by id
-        /// </summary>
-        public async Task<ResponseBase> DeleteMemoryCard(long id)
-        {
-            try
-            {
-                var entity = await _unitOfWork.MemoryCardStatisticsRepository.ReadAsync(u => u.Id == id);
-                if (entity is null)
-                {
-                    return await _validator.CreateNotFoundResponse<ResponseBase>();
-                }
-
-                await _unitOfWork.MemoryCardStatisticsRepository.DeleteAsync(entity);
-                await _unitOfWork.SaveAsync();
-
-                return new ResponseBase();
-            }
-            catch (Exception ex)
-            {
-                return await _validator.CreateDeleteErrorResponse<ResponseBase>(ex.Message);
-            }
-        }
-
         /// <summary>
         /// Delete all MemoryCard statistics by userId
         /// </summary>
@@ -273,5 +260,125 @@ namespace KJBrainDeveloperService.Business
         }
 
         #endregion
+
+        /// <summary>
+        /// read best score by training mode
+        /// </summary>
+        private async Task<long> ReadBestScore(long userId, Entity.TrainingModeType trainingMode)
+        {
+            return await _unitOfWork.TrainingStatisticsRepository
+                  .Query(x => x.UserId == userId && x.TrainingMode == trainingMode)
+                  .OrderByDescending(x => x.Score)
+                  .Select(x => x.Score)
+                  .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Read last sound type id
+        /// </summary>
+        private async Task<int> ReadLastSoundTypeId(long userId)
+        {
+            int result = 0;
+
+            try
+            {
+                var trainings = await _unitOfWork.TrainingStatisticsRepository
+                      .Query(x => x.UserId == userId && x.TrainingMode == Entity.TrainingModeType.MemorySound)
+                      .OrderByDescending(x => x.Created)
+                      .Take(2)
+                      .ToListAsync();
+
+                if (trainings.Any())
+                {
+                    var first = trainings.FirstOrDefault();
+                    if (first.Created.Date == DateTime.UtcNow.Date)
+                    {
+                        if (trainings.Count > 1)
+                        {
+                            return trainings.LastOrDefault().SoundTypeId;
+                        }
+                    }
+                    else
+                    {
+                        return trainings.FirstOrDefault().SoundTypeId;
+                    }
+                }
+                else
+                {
+                    return 1;
+                }
+
+                return result;
+            }
+            catch (Exception)
+            {
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Calculate card size
+        /// </summary>
+        private async Task<MemoryCardSizeType> ReadCardSize(long userId)
+        {
+            var cards = await _unitOfWork.MemoryCardStatisticsRepository
+                   .Query(x => x.UserId == userId && x.IsPractice == false)
+                   .OrderByDescending(x => x.Created)
+                   .ToListAsync();
+
+            if (!cards.Any())
+                return MemoryCardSizeType.Small;
+
+            if (cards.Count == 1)
+                return MemoryCardSizeType.Medium;
+
+            if (cards.Count >= 2)
+                return MemoryCardSizeType.Large;
+
+            return MemoryCardSizeType.Large;
+        }
+        /// <summary>
+        /// Read last picture type id
+        /// </summary>
+        private async Task<int> ReadLastPictureTypeId(long userId)
+        {
+            int result = 0;
+
+            try
+            {
+
+                var cards = await _unitOfWork.MemoryCardStatisticsRepository
+                      .Query(x => x.UserId == userId && x.IsPractice == false)
+                      .OrderByDescending(x => x.Created)
+                      .Take(2)
+                      .ToListAsync();
+
+                if (cards.Any())
+                {
+                    var first = cards.FirstOrDefault();
+                    if (first.Created.Date == DateTime.UtcNow.Date)
+                    {
+                        if (cards.Count > 1)
+                        {
+                            return cards.LastOrDefault().PictureTypeId;
+                        }
+                    }
+                    else
+                    {
+                        return cards.FirstOrDefault().PictureTypeId;
+                    }
+                }
+                else
+                {
+                    return 1;
+                }
+
+                return result;
+            }
+            catch (Exception)
+            {
+                return result;
+            }
+        }
     }
 }

@@ -27,6 +27,7 @@ namespace KJBrainDeveloperService.Business
                 Id = request.Id,
                 UserId = request.UserId,
                 Score = request.Score,
+                SoundTypeId = request.SoundTypeId,
                 TrainingMode = Create(request.TrainingMode),
                 Created = request.Created,
             };
@@ -44,6 +45,7 @@ namespace KJBrainDeveloperService.Business
             {
                 UserId = userId,
                 Score = request.Score,
+                SoundTypeId = request.SoundTypeId,
                 TrainingMode = Create(request.TrainingMode),
                 Created = DateTime.UtcNow
             };
@@ -95,6 +97,8 @@ namespace KJBrainDeveloperService.Business
                     return TrainingModeType.MemoryMatrix;
                 case Entity.TrainingModeType.Math:
                     return TrainingModeType.Math;
+                case Entity.TrainingModeType.WhatDayIsIt:
+                    return TrainingModeType.WhatDayIsIt;
                 default:
                     throw new ArgumentException("Invalid TrainingModeType.");
             }
@@ -115,6 +119,8 @@ namespace KJBrainDeveloperService.Business
                     return Entity.TrainingModeType.MemoryMatrix;
                 case TrainingModeType.Math:
                     return Entity.TrainingModeType.Math;
+                case TrainingModeType.WhatDayIsIt:
+                    return Entity.TrainingModeType.WhatDayIsIt;
                 default:
                     throw new ArgumentException("Invalid TrainingModeType.");
             }
@@ -139,7 +145,8 @@ namespace KJBrainDeveloperService.Business
                 UserId = request.UserId,
                 Moved = request.Moved,
                 Difficult = Create(request.Difficult),
-                LastPictureTypeId = request.LastPictureTypeId,
+                PictureTypeId = request.PictureTypeId,
+                IsPractice = request.IsPractice,
                 Created = request.Created,
             };
         }
@@ -157,7 +164,8 @@ namespace KJBrainDeveloperService.Business
                 UserId = userId,
                 Moved = request.Moved,
                 Difficult = Create(request.Difficult),
-                LastPictureTypeId = request.LastPictureTypeId,
+                PictureTypeId = request.PictureTypeId,
+                IsPractice = request.IsPractice,
                 Created = DateTime.UtcNow
             };
         }

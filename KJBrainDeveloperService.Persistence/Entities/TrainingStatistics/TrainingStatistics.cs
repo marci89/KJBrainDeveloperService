@@ -22,6 +22,10 @@
         /// </summary>
         public TrainingModeType TrainingMode { get; set; }
         /// <summary>
+        /// Sound type id to be diverse.
+        /// </summary>
+        public int SoundTypeId { get; set; }
+        /// <summary>
         /// created date
         /// </summary
         public DateTime Created { get; set; }
