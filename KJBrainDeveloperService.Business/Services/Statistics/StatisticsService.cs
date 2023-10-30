@@ -1,7 +1,7 @@
 ﻿using KJBrainDeveloperService.Persistence.Repositories;
 using KJBrainDeveloperService.ServiceContracts;
+using KJBrainDeveloperService.ServiceContracts.Request.RankingList;
 using Microsoft.EntityFrameworkCore;
-
 using Entity = KJBrainDeveloperService.Persistence.Entities;
 
 namespace KJBrainDeveloperService.Business
@@ -261,6 +261,64 @@ namespace KJBrainDeveloperService.Business
 
         #endregion
 
+        #region Ranking
+
+        /// <summary>
+        ///  List top user's score by TrainingModeType request
+        /// </summary>
+        public async Task<ListRankingResponse> ListRanking(ListRankingRequest request)
+        {
+            try
+            {
+                var result = new List<RankedUser>();
+                var type = _factory.Create(request.TrainingModeType);
+
+                var topScores = await _unitOfWork.TrainingStatisticsRepository
+        .Query(ts => ts.TrainingMode == type)
+        .GroupBy(ts => ts.UserId)
+        .Select(group => new
+        {
+            UserId = group.Key,
+            Score = group.Max(ts => ts.Score)
+        })
+        .OrderByDescending(result => result.Score)
+        .Take(5)
+        .ToListAsync();
+
+                foreach (var topScore in topScores)
+                {
+                    var user = await _unitOfWork.UserRepository.Query(x => x.Id == topScore.UserId).FirstOrDefaultAsync();
+                    if (user != null)
+                    {
+                        result.Add(new RankedUser
+                        {
+                            UserId = user.Id,
+                            AvatarId = user.AvatarId,
+                            TrainingModeType = request.TrainingModeType,
+                            Username = user.Username,
+                            Score = topScore.Score
+                        });
+                    }
+                }
+
+                return await Task.FromResult(new ListRankingResponse
+                {
+                    StatusCode = StatusCode.Ok,
+                    Result = result
+                });
+            }
+            catch (Exception ex)
+            {
+                return await _validator.CreateServerErrorResponse<ListRankingResponse>(ex.Message);
+            }
+        }
+
+
+        #endregion
+
+
+        #region private methods
+
         /// <summary>
         /// read best score by training mode
         /// </summary>
@@ -305,7 +363,7 @@ namespace KJBrainDeveloperService.Business
                 }
                 else
                 {
-                    return 1;
+                    return 0;
                 }
 
                 return result;
@@ -370,7 +428,7 @@ namespace KJBrainDeveloperService.Business
                 }
                 else
                 {
-                    return 1;
+                    return 0;
                 }
 
                 return result;
@@ -380,5 +438,7 @@ namespace KJBrainDeveloperService.Business
                 return result;
             }
         }
+
+        #endregion
     }
 }

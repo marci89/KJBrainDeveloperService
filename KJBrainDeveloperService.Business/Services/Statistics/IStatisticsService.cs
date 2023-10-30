@@ -1,4 +1,5 @@
 ﻿using KJBrainDeveloperService.ServiceContracts;
+using KJBrainDeveloperService.ServiceContracts.Request.RankingList;
 
 namespace KJBrainDeveloperService.Business
 {
@@ -13,5 +14,7 @@ namespace KJBrainDeveloperService.Business
         Task<ListMemoryCardStatisticsChartResponse> ListMemoryCardForChart(ListMemoryCardStatisticsChartRequest request, long userId);
         Task<CreateMemoryCardStatisticsResponse> CreateMemoryCard(CreateMemoryCardStatisticsRequest request, long userId);
         Task<ResponseBase> DeleteAllMemoryCard(long userId);
+
+        Task<ListRankingResponse> ListRanking(ListRankingRequest request);
     }
 }

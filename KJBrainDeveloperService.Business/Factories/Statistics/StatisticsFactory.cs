@@ -85,7 +85,7 @@ namespace KJBrainDeveloperService.Business
         /// <summary>
         /// Map client TrainingModeType from domain TrainingModeType
         /// </summary>
-        private TrainingModeType Create(Entity.TrainingModeType type)
+        public TrainingModeType Create(Entity.TrainingModeType type)
         {
             switch (type)
             {
@@ -107,7 +107,7 @@ namespace KJBrainDeveloperService.Business
         /// <summary>
         /// Map domain TrainingModeType from client TrainingModeType
         /// </summary>
-        private Entity.TrainingModeType Create(TrainingModeType type)
+        public Entity.TrainingModeType Create(TrainingModeType type)
         {
             switch (type)
             {

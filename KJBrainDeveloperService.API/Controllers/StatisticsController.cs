@@ -2,6 +2,7 @@
 using KJBrainDeveloperService.API.Helpers;
 using KJBrainDeveloperService.Business;
 using KJBrainDeveloperService.ServiceContracts;
+using KJBrainDeveloperService.ServiceContracts.Request.RankingList;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.ComponentModel;
@@ -18,6 +19,23 @@ namespace KJBrainDeveloperService.API.Controllers
         {
             _service = service;
         }
+
+        /// <summary>
+        ///  List top user's score by TrainingModeType request
+        /// </summary>
+        [HttpGet("ListRanking")]
+        public async Task<IActionResult> ListRanking([FromQuery] ListRankingRequest request)
+        {
+
+            var response = await _service.ListRanking(request);
+            if (response.HasError)
+            {
+                LogError(JsonConvert.SerializeObject(request), response);
+                return this.CreateErrorResponse(response);
+            }
+            return Ok(response.Result);
+        }
+
 
         #region training
 
