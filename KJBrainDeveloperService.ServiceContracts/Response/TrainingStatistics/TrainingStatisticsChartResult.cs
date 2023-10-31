@@ -26,5 +26,9 @@
         /// Math chart data
         /// </summary>
         public List<string> MathChartData { get; set; }
+        /// <summary>
+        /// What day chart data
+        /// </summary>
+        public List<string> WhatDayIsItChartData { get; set; }
     }
 }

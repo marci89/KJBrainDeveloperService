@@ -67,7 +67,8 @@ namespace KJBrainDeveloperService.Business
                 MemorySoundChartData = Create(entites, quantity, Entity.TrainingModeType.MemorySound),
                 MemoryNumberChartData = Create(entites, quantity, Entity.TrainingModeType.MemoryNumber),
                 MemoryMatrixChartData = Create(entites, quantity, Entity.TrainingModeType.MemoryMatrix),
-                MathChartData = Create(entites, quantity, Entity.TrainingModeType.Math)
+                MathChartData = Create(entites, quantity, Entity.TrainingModeType.Math),
+                WhatDayIsItChartData = Create(entites, quantity, Entity.TrainingModeType.WhatDayIsIt)
             };
         }
 
