@@ -66,7 +66,7 @@ namespace KJBrainDeveloperService.Business
                     BestMemorySoundScore = await ReadBestScore(userId, Entity.TrainingModeType.MemorySound),
                     BestWhatDayIsItScore = await ReadBestScore(userId, Entity.TrainingModeType.WhatDayIsIt),
                     BestMemoryNumberScore = await ReadBestScore(userId, Entity.TrainingModeType.MemoryNumber),
-                    BestMathdScore = await ReadBestScore(userId, Entity.TrainingModeType.Math),
+                    BestMathScore = await ReadBestScore(userId, Entity.TrainingModeType.Math),
                     BestMemoryMatrixScore = await ReadBestScore(userId, Entity.TrainingModeType.MemoryMatrix),
                     LastPictureTypeId = lastPictureId,
                     LastSoundTypeId = lastSoundId,

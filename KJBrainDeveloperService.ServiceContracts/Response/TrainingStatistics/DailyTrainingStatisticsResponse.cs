@@ -15,7 +15,7 @@
         public long BestMemorySoundScore { get; set; }
         public long BestWhatDayIsItScore { get; set; }
         public long BestMemoryNumberScore { get; set; }
-        public long BestMathdScore { get; set; }
+        public long BestMathScore { get; set; }
         public long BestMemoryMatrixScore { get; set; }
 
         /// <summary>
