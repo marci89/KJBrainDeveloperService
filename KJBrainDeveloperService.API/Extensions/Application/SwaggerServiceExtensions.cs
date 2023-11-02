@@ -17,9 +17,9 @@ namespace KJBrainDeveloperService.API.Extensions
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "English Helper Service",
+                    Title = "KJ Brain Developer Service",
                     Version = $"v{version}",
-                    Description = "English Helper Service",
+                    Description = "KJ Brain Developer Service",
                     Contact = new OpenApiContact
                     {
                         Email = "kismarczirobi@gmail.com",
